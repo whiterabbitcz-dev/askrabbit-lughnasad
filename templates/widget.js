@@ -23,10 +23,10 @@
       display: flex; align-items: center; justify-content: center;
       font-size: 32px; transition: transform 0.2s, box-shadow 0.2s;
       box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-      background: linear-gradient(135deg, #fdc300 0%, #d4a200 100%);
+      background: #3d0c0e;
     }
     #wr-bot-toggle:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(0,0,0,0.4); }
-    #wr-bot-toggle.open { background: #333; font-size: 24px; }
+    #wr-bot-toggle.open { background: #2a0809; font-size: 24px; }
     #wr-bot-frame {
       position: fixed; bottom: 100px; right: 24px;
       width: 380px; height: 600px;
@@ -34,7 +34,7 @@
       border-radius: 20px; overflow: hidden;
       box-shadow: 0 12px 48px rgba(0,0,0,0.35);
       z-index: 99999; display: none;
-      border: 1px solid rgba(255,255,255,0.08);
+      border: 1px solid rgba(61,12,14,0.12);
     }
     #wr-bot-frame.open { display: block; }
     #wr-bot-frame iframe { width: 100%; height: 100%; border: none; }

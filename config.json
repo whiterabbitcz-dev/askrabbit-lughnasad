@@ -2,33 +2,33 @@
   "_meta": {
     "template": "White Rabbit AI Chatbot Template v1.0",
     "agency": "White Rabbit",
-    "client": "Czech Beer Museum Prague",
+    "client": "Lughnasad — keltský hudební festival",
     "last_updated": "2026-04-04"
   },
 
   "bot": {
-    "name": "BeerBot",
-    "tagline": "Czech Beer Museum Prague",
+    "name": "Diviciacus",
+    "tagline": "Rádce, lékař a soudce",
     "logo_path": "/static/img/logo.png",
-    "favicon_emoji": "🍺",
-    "bot_emoji": "🍺"
+    "favicon_emoji": "🌿",
+    "bot_emoji": "🌿"
   },
 
   "branding": {
-    "primary": "#058336",
-    "primary_dark": "#002a0b",
-    "primary_mid": "#215527",
-    "accent": "#fdc300",
-    "text_light": "#e7e7e7",
-    "text_muted": "#a0a0a0",
-    "bg_dark": "#0a1f0e",
-    "bg_mid": "#122a16",
-    "bg_card": "rgba(255,255,255,0.05)",
-    "border": "rgba(253,195,0,0.15)",
-    "user_bubble_bg": "linear-gradient(135deg, #fdc300 0%, #d4a200 100%)",
-    "user_bubble_text": "#002a0b",
-    "bot_bubble_bg": "rgba(255,255,255,0.06)",
-    "bot_bubble_border": "rgba(253,195,0,0.12)",
+    "primary": "#3d0c0e",
+    "primary_dark": "#2a0809",
+    "primary_mid": "#5a1215",
+    "accent": "#f5bc33",
+    "text_light": "#191919",
+    "text_muted": "#6b6b6b",
+    "bg_dark": "#F2EFE9",
+    "bg_mid": "#EBE7DF",
+    "bg_card": "rgba(61,12,14,0.04)",
+    "border": "rgba(61,12,14,0.12)",
+    "user_bubble_bg": "#7a1518",
+    "user_bubble_text": "#ffffff",
+    "bot_bubble_bg": "#ffffff",
+    "bot_bubble_border": "rgba(61,12,14,0.15)",
     "font_display": "'Allotrope', 'DM Sans', sans-serif",
     "font_body": "'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif",
     "font_url": "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap"
@@ -37,43 +37,19 @@
   "languages": [
     {"code": "cs", "flag": "🇨🇿", "label": "Česky"},
     {"code": "en", "flag": "🇬🇧", "label": "English"},
-    {"code": "de", "flag": "🇩🇪", "label": "Deutsch"},
-    {"code": "es", "flag": "🇪🇸", "label": "Español"},
-    {"code": "fr", "flag": "🇫🇷", "label": "Français"},
-    {"code": "it", "flag": "🇮🇹", "label": "Italiano"},
-    {"code": "ja", "flag": "🇯🇵", "label": "日本語"},
-    {"code": "ko", "flag": "🇰🇷", "label": "한국어"},
-    {"code": "zh", "flag": "🇨🇳", "label": "中文"},
-    {"code": "uk", "flag": "🇺🇦", "label": "Українська"},
-    {"code": "pl", "flag": "🇵🇱", "label": "Polski"}
+    {"code": "sk", "flag": "🇸🇰", "label": "Slovensky"}
   ],
 
   "welcome_messages": {
     "cs": "Ahoj! 🍺 Jsem BeerBot, tvůj průvodce Českým muzeem piva. Zeptej se mě na cokoliv!",
     "en": "Hey there! 🍺 I'm BeerBot, your guide to the Czech Beer Museum. Ask me anything!",
-    "de": "Hallo! 🍺 Ich bin BeerBot, dein Guide zum Tschechischen Biermuseum. Frag mich alles!",
-    "es": "¡Hola! 🍺 Soy BeerBot, tu guía del Museo de la Cerveza Checa. ¡Pregúntame!",
-    "fr": "Salut! 🍺 Je suis BeerBot, ton guide du Musée de la Bière Tchèque. Pose-moi tes questions!",
-    "it": "Ciao! 🍺 Sono BeerBot, la tua guida al Museo della Birra Ceca. Chiedimi tutto!",
-    "ja": "こんにちは！🍺 チェコビール博物館のガイド、BeerBotです。何でも聞いてください！",
-    "ko": "안녕하세요! 🍺 체코 맥주 박물관 가이드 BeerBot입니다. 무엇이든 물어보세요!",
-    "zh": "你好！🍺 我是BeerBot，捷克啤酒博物馆的导游。随时问我！",
-    "uk": "Привіт! 🍺 Я BeerBot, твій гід по Чеському музею пива. Питай будь-що!",
-    "pl": "Cześć! 🍺 Jestem BeerBot, twój przewodnik po Czeskim Muzeum Piwa. Pytaj o wszystko!"
+    "sk": "Ahoj! 🍺 Som BeerBot, tvoj sprievodca Českým múzeom piva. Opýtaj sa ma na čokoľvek!"
   },
 
   "placeholders": {
     "cs": "Zeptej se mě na něco...",
     "en": "Ask me something...",
-    "de": "Frag mich etwas...",
-    "es": "Pregúntame algo...",
-    "fr": "Pose-moi une question...",
-    "it": "Chiedimi qualcosa...",
-    "ja": "何か聞いてね...",
-    "ko": "무엇이든 물어보세요...",
-    "zh": "问我点什么...",
-    "uk": "Запитай мене щось...",
-    "pl": "Zapytaj mnie o coś..."
+    "sk": "Opýtaj sa ma na niečo..."
   },
 
   "system_prompt_template": "You are {bot_name} {bot_emoji}, the friendly chatbot of {tagline}.\n\nRULES:\n1. You ONLY answer questions related to {tagline}, Czech beer, beer history, and Prague tourism tips relevant to museum visitors.\n2. If someone asks something off-topic, politely decline and redirect to museum topics. Be friendly — suggest something interesting about the museum instead.\n3. Keep answers concise (2-4 sentences max unless detailed info is needed).\n4. Be warm, enthusiastic about beer culture, and welcoming.\n5. The visitor initially selected {lang_name} ({lang_code}). Start in this language, but if the visitor writes in a DIFFERENT language, SWITCH to their language and continue in it from that point. Always match the language the visitor is currently using.\n6. Use casual, friendly tone — like a bartender who knows everything about the museum.\n7. If asked about buying tickets online, mention that online sales are temporarily unavailable but tickets can be bought at the venue.\n8. Never make up information not in the knowledge base. If you don't know something, say so honestly and suggest they contact the museum directly at +420 778 072 337 or visit@beermuseum.cz.\n9. If asked about current time, weather, or real-time info you can't know, politely say you can't check that and suggest they ask at reception.\n\nKNOWLEDGE BASE:\n{knowledge_base}",
@@ -81,10 +57,10 @@
   "disclaimer": {
     "cs": "AI chatbot · může se mýlit",
     "en": "AI chatbot · may make mistakes",
-    "de": "AI-Chatbot · kann Fehler machen",
+    "sk": "AI chatbot · môže sa mýliť",
     "_default": "AI chatbot"
   },
 
-  "website_url": "https://beermuseum.cz",
-  "website_label": "beermuseum.cz"
+  "website_url": "https://lughnasad.cz",
+  "website_label": "lughnasad.cz"
 }
