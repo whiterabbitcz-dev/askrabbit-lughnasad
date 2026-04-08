@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Loading...</title>
+<script src="/config.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:#0a0a0a;color:#e8e8e8}
+body{font-family:var(--font-body)}
+
+:root{
+  --primary:#058336;--primary-dark:#002a0b;--accent:#fdc300;
+  --bg-dark:#0a1f0e;--bg-mid:#122a16;--text-light:#e7e7e7;--text-muted:#a0a0a0;
+  --border:rgba(253,195,0,0.15);--glass:rgba(255,255,255,0.05);
+  --user-bg:linear-gradient(135deg,#fdc300,#d4a200);--user-text:#002a0b;
+  --bot-bg:rgba(255,255,255,0.06);--bot-border:rgba(253,195,0,0.12);
+  --font-display:'DM Sans',sans-serif;--font-body:'DM Sans',-apple-system,sans-serif;
+}
+
+.app{height:100%;display:flex;flex-direction:column;background:linear-gradient(180deg,var(--bg-dark),var(--bg-mid) 50%,var(--bg-dark))}
+
+/* ── LANGUAGE SCREEN ── */
+.lang-screen{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;gap:28px}
+.logo-area{text-align:center}
+.logo-area img{width:120px;height:auto;margin-bottom:12px;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.4))}
+.logo-area h1{font-family:var(--font-display);font-size:36px;font-weight:800;color:var(--accent);letter-spacing:-0.5px}
+.logo-area .tagline{font-size:13px;color:var(--text-muted);letter-spacing:2px;text-transform:uppercase;margin-top:4px}
+.flag-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:10px;max-width:420px;width:100%}
+.flag-btn{display:flex;flex-direction:column;align-items:center;gap:5px;padding:14px 6px;
+  background:var(--glass);border:1px solid var(--border);border-radius:14px;cursor:pointer;
+  transition:all .2s;-webkit-appearance:none;font-family:inherit}
+.flag-btn:hover,.flag-btn:active{background:rgba(253,195,0,0.1);transform:scale(1.05);
+  box-shadow:0 4px 20px rgba(253,195,0,0.2)}
+.flag-btn .fi{font-size:32px}.flag-btn .fl{font-size:10px;color:var(--text-muted);font-weight:500}
+.footer-txt{font-size:11px;color:#555;text-align:center;max-width:320px;line-height:1.4}
+.footer-txt a{color:var(--accent);text-decoration:none}
+
+/* ── CHAT SCREEN ── */
+.chat-screen{display:none;flex-direction:column;height:100%}
+.chat-screen.active{display:flex}
+.chat-header{display:flex;align-items:center;gap:10px;padding:12px 16px;
+  border-bottom:1px solid var(--border);background:rgba(10,31,14,0.97);backdrop-filter:blur(10px);z-index:2}
+.back-btn{background:none;border:none;color:var(--accent);font-size:22px;cursor:pointer;padding:4px 8px;border-radius:8px;font-family:inherit}
+.hdr-logo{width:36px;height:36px;border-radius:8px;object-fit:contain}
+.hdr-info{flex:1}.hdr-name{font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--accent)}
+.hdr-sub{font-size:10px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase}
+.hdr-flag{font-size:22px}
+
+.messages{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;
+  -webkit-overflow-scrolling:touch;scroll-behavior:smooth}
+
+.msg{max-width:82%;padding:11px 15px;border-radius:20px;font-size:15px;line-height:1.5;
+  display:flex;gap:8px;align-items:flex-start;animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.msg.user{align-self:flex-end;background:var(--user-bg);color:var(--user-text);
+  border-bottom-right-radius:6px;font-weight:500}
+.msg.bot{align-self:flex-start;background:var(--bot-bg);border:1px solid var(--bot-border);
+  border-bottom-left-radius:6px;color:var(--text-light)}
+.msg .ico{font-size:17px;flex-shrink:0;margin-top:1px}
+.msg .txt{white-space:pre-wrap;word-break:break-word}
+
+.typing{align-self:flex-start;background:var(--bot-bg);border:1px solid var(--bot-border);
+  border-radius:20px;border-bottom-left-radius:6px;padding:11px 15px;display:flex;gap:4px;align-items:center}
+.typing span{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);
+  animation:pulse 1.2s infinite}
+.typing span:nth-child(2){animation-delay:.2s}
+.typing span:nth-child(3){animation-delay:.4s}
+@keyframes pulse{0%,80%,100%{opacity:.2;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
+
+.input-area{padding:10px 14px;border-top:1px solid var(--border);
+  background:rgba(10,31,14,0.97);backdrop-filter:blur(10px);z-index:2}
+.input-row{display:flex;gap:8px;align-items:flex-end}
+.input-row textarea{flex:1;background:var(--glass);border:1px solid rgba(253,195,0,0.18);
+  border-radius:20px;padding:11px 16px;color:var(--text-light);font-size:15px;
+  font-family:var(--font-body);outline:none;resize:none;max-height:100px;line-height:1.4}
+.input-row textarea::placeholder{color:#666}
+.send-btn{width:42px;height:42px;border-radius:50%;background:var(--user-bg);border:none;
+  color:var(--user-text);font-size:20px;font-weight:700;cursor:pointer;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;transition:opacity .2s}
+.send-btn:disabled{opacity:.35}
+.disclaimer{font-size:10px;color:#444;text-align:center;margin-top:6px}
+.disclaimer a{color:var(--accent);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- LANGUAGE SCREEN -->
+  <div class="lang-screen" id="lang-screen">
+    <div class="logo-area">
+      <img id="logo" src="" alt="">
+      <h1 id="bot-name"></h1>
+      <div class="tagline" id="tagline"></div>
+    </div>
+    <div class="flag-grid" id="flags"></div>
+    <div class="footer-txt" id="lang-footer"></div>
+  </div>
+
+  <!-- CHAT SCREEN -->
+  <div class="chat-screen" id="chat-screen">
+    <div class="chat-header">
+      <button class="back-btn" onclick="showLang()">←</button>
+      <img class="hdr-logo" id="hdr-logo" src="" alt="">
+      <div class="hdr-info">
+        <div class="hdr-name" id="hdr-name"></div>
+        <div class="hdr-sub" id="hdr-sub"></div>
+      </div>
+      <div class="hdr-flag" id="hdr-flag"></div>
+    </div>
+    <div class="messages" id="messages"></div>
+    <div class="input-area">
+      <div class="input-row">
+        <textarea id="input" rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send()}"></textarea>
+        <button class="send-btn" id="send-btn" onclick="send()" disabled>↑</button>
+      </div>
+      <div class="disclaimer" id="disclaimer"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const C = window.__BOTCFG__;
+if (!C) { document.body.innerHTML = '<p style="padding:40px;color:red">Config not loaded. Check /config.js</p>'; }
+
+// Apply branding from config
+const R = document.documentElement.style;
+const B = C.branding;
+R.setProperty('--primary', B.primary);
+R.setProperty('--primary-dark', B.primary_dark);
+R.setProperty('--accent', B.accent);
+R.setProperty('--bg-dark', B.bg_dark);
+R.setProperty('--bg-mid', B.bg_mid);
+R.setProperty('--text-light', B.text_light);
+R.setProperty('--text-muted', B.text_muted || '#a0a0a0');
+R.setProperty('--border', B.border);
+R.setProperty('--glass', B.bg_card);
+R.setProperty('--user-bg', B.user_bubble_bg);
+R.setProperty('--user-text', B.user_bubble_text);
+R.setProperty('--bot-bg', B.bot_bubble_bg);
+R.setProperty('--bot-border', B.bot_bubble_border);
+R.setProperty('--font-display', B.font_display);
+R.setProperty('--font-body', B.font_body);
+
+// Load font
+if (B.font_url) {
+  const link = document.createElement('link');
+  link.rel = 'stylesheet'; link.href = B.font_url;
+  document.head.appendChild(link);
+}
+
+document.title = C.bot.name + ' — ' + C.bot.tagline;
+
+// Init lang screen
+document.getElementById('logo').src = C.bot.logo_path;
+document.getElementById('bot-name').textContent = C.bot.name;
+document.getElementById('tagline').textContent = C.bot.tagline;
+
+const flagsEl = document.getElementById('flags');
+C.languages.forEach(l => {
+  const btn = document.createElement('button');
+  btn.className = 'flag-btn';
+  btn.innerHTML = `<span class="fi">${l.flag}</span><span class="fl">${l.label}</span>`;
+  btn.onclick = () => selectLang(l);
+  flagsEl.appendChild(btn);
+});
+
+const wu = C.website_url, wl = C.website_label;
+document.getElementById('lang-footer').innerHTML =
+  `AI chatbot · <a href="${wu}" target="_blank">${wl}</a>`;
+
+// Chat header
+document.getElementById('hdr-logo').src = C.bot.logo_path;
+document.getElementById('hdr-name').textContent = C.bot.name;
+document.getElementById('hdr-sub').textContent = C.bot.tagline;
+
+// State
+let lang = null, messages = [], loading = false, sessionId = null;
+const inputEl = document.getElementById('input');
+const sendBtn = document.getElementById('send-btn');
+const msgsEl = document.getElementById('messages');
+
+inputEl.addEventListener('input', () => {
+  sendBtn.disabled = !inputEl.value.trim() || loading;
+  inputEl.style.height = 'auto';
+  inputEl.style.height = Math.min(inputEl.scrollHeight, 100) + 'px';
+});
+
+// Detect source from URL params or default
+const params = new URLSearchParams(location.search);
+const SOURCE = params.get('source') || (window.self !== window.top ? 'widget' : 
+  /iPad|tablet/i.test(navigator.userAgent) ? 'tablet' : 'qr');
+
+function selectLang(l) {
+  lang = l.code;
+  document.getElementById('hdr-flag').textContent = l.flag;
+  messages = [{ role: 'assistant', content: C.welcome[l.code] || C.welcome.en }];
+  
+  const ph = C.placeholders[l.code] || C.placeholders.en || 'Ask me...';
+  inputEl.placeholder = ph;
+  
+  const disc = C.disclaimer[l.code] || C.disclaimer._default || 'AI chatbot';
+  document.getElementById('disclaimer').innerHTML =
+    `${disc} · <a href="${wu}" target="_blank">${wl}</a>`;
+  
+  renderMessages();
+  document.getElementById('lang-screen').style.display = 'none';
+  document.getElementById('chat-screen').classList.add('active');
+  setTimeout(() => inputEl.focus(), 300);
+}
+
+function showLang() {
+  document.getElementById('chat-screen').classList.remove('active');
+  document.getElementById('lang-screen').style.display = '';
+  messages = []; lang = null; sessionId = null;
+}
+
+function renderMessages() {
+  const emoji = C.bot.bot_emoji;
+  msgsEl.innerHTML = messages.map(m => {
+    if (m.role === 'user') {
+      return `<div class="msg user"><span class="txt">${esc(m.content)}</span></div>`;
+    }
+    return `<div class="msg bot"><span class="ico">${emoji}</span><span class="txt">${esc(m.content)}</span></div>`;
+  }).join('');
+  
+  if (loading) {
+    msgsEl.innerHTML += `<div class="typing"><span></span><span></span><span></span></div>`;
+  }
+  msgsEl.scrollTop = msgsEl.scrollHeight;
+}
+
+function esc(s) {
+  const d = document.createElement('div');
+  d.textContent = s || '';
+  return d.innerHTML;
+}
+
+async function send() {
+  const text = inputEl.value.trim();
+  if (!text || loading) return;
+
+  messages.push({ role: 'user', content: text });
+  inputEl.value = ''; inputEl.style.height = 'auto';
+  sendBtn.disabled = true;
+  loading = true;
+  renderMessages();
+
+  try {
+    const apiMsgs = messages.map(m => ({ role: m.role, content: m.content }));
+    const res = await fetch('/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: apiMsgs,
+        language: lang,
+        session_id: sessionId,
+        source: SOURCE,
+      }),
+    });
+    const data = await res.json();
+    sessionId = data.session_id;
+    messages.push({ role: 'assistant', content: data.reply });
+  } catch (e) {
+    messages.push({ role: 'assistant', content: '⚠️ Connection error. Please try again.' });
+  }
+
+  loading = false;
+  renderMessages();
+  sendBtn.disabled = false;
+  inputEl.focus();
+}
+</script>
+</body>
+</html>
