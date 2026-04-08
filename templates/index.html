@@ -29,6 +29,7 @@ body{font-family:var(--font-body)}
 .logo-area img{width:120px;height:auto;margin-bottom:12px;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.4))}
 .logo-area h1{font-family:var(--font-display);font-size:36px;font-weight:800;color:var(--primary);letter-spacing:-0.5px}
 .logo-area .tagline{font-size:13px;color:var(--text-muted);letter-spacing:2px;text-transform:uppercase;margin-top:4px}
+.landing-cta{text-align:center;max-width:420px;line-height:1.8;font-size:14px;color:var(--text-light)}
 .flag-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:10px;max-width:420px;width:100%}
 .flag-btn{display:flex;flex-direction:column;align-items:center;gap:5px;padding:14px 6px;
   background:var(--glass);border:1px solid var(--border);border-radius:14px;cursor:pointer;
@@ -37,16 +38,16 @@ body{font-family:var(--font-body)}
   box-shadow:0 4px 20px rgba(61,12,14,0.1)}
 .flag-btn .fi{font-size:32px}.flag-btn .fl{font-size:10px;color:var(--text-muted);font-weight:500}
 .footer-txt{font-size:11px;color:#888;text-align:center;max-width:320px;line-height:1.4}
-.footer-txt a{color:var(--accent);text-decoration:none}
+.footer-txt a{color:var(--primary);text-decoration:none}
 
 /* ── CHAT SCREEN ── */
 .chat-screen{display:none;flex-direction:column;height:100%}
 .chat-screen.active{display:flex}
 .chat-header{display:flex;align-items:center;gap:10px;padding:12px 16px;
   border-bottom:1px solid var(--border);background:rgba(242,239,233,0.97);backdrop-filter:blur(10px);z-index:2}
-.back-btn{background:none;border:none;color:var(--accent);font-size:22px;cursor:pointer;padding:4px 8px;border-radius:8px;font-family:inherit}
+.back-btn{background:none;border:none;color:var(--primary);font-size:22px;cursor:pointer;padding:4px 8px;border-radius:8px;font-family:inherit}
 .hdr-logo{width:36px;height:36px;border-radius:8px;object-fit:contain}
-.hdr-info{flex:1}.hdr-name{font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--accent)}
+.hdr-info{flex:1}.hdr-name{font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--primary)}
 .hdr-sub{font-size:10px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase}
 .hdr-flag{font-size:22px}
 
@@ -83,7 +84,9 @@ body{font-family:var(--font-body)}
   display:flex;align-items:center;justify-content:center;transition:opacity .2s}
 .send-btn:disabled{opacity:.35}
 .disclaimer{font-size:10px;color:#888;text-align:center;margin-top:6px}
-.disclaimer a{color:var(--accent);text-decoration:none}
+.disclaimer a{color:var(--primary);text-decoration:none}
+.agency-credit{font-size:9px;color:var(--text-muted);margin-top:3px}
+.agency-credit a{color:var(--text-muted);text-decoration:none}
 </style>
 </head>
 <body>
@@ -96,6 +99,7 @@ body{font-family:var(--font-body)}
       <h1 id="bot-name"></h1>
       <div class="tagline" id="tagline"></div>
     </div>
+    <div class="landing-cta" id="landing-cta"></div>
     <div class="flag-grid" id="flags"></div>
     <div class="footer-txt" id="lang-footer"></div>
   </div>
@@ -159,6 +163,17 @@ document.getElementById('logo').src = C.bot.logo_path;
 document.getElementById('bot-name').textContent = C.bot.name;
 document.getElementById('tagline').textContent = C.bot.tagline;
 
+// Landing CTA
+if (C.landing_cta) {
+  document.getElementById('landing-cta').innerHTML =
+    C.languages.map(l => C.landing_cta[l.code] || '').filter(Boolean).join('<br>');
+}
+
+// Agency credit (reused in both footers)
+const acRaw = C.agency_credit || '';
+const acHtml = acRaw.replace(/(whiterabbit\.cz)/, '<a href="https://whiterabbit.cz" target="_blank" rel="noopener">$1</a>');
+const acCredit = acHtml ? `<div class="agency-credit">${acHtml}</div>` : '';
+
 const flagsEl = document.getElementById('flags');
 C.languages.forEach(l => {
   const btn = document.createElement('button');
@@ -170,7 +185,7 @@ C.languages.forEach(l => {
 
 const wu = C.website_url, wl = C.website_label;
 document.getElementById('lang-footer').innerHTML =
-  `AI chatbot · <a href="${wu}" target="_blank">${wl}</a>`;
+  `${C.disclaimer._default || 'AI chatbot'} · <a href="${wu}" target="_blank">${wl}</a>${acCredit}`;
 
 // Chat header
 document.getElementById('hdr-logo').src = C.bot.logo_path;
@@ -204,7 +219,7 @@ function selectLang(l) {
   
   const disc = C.disclaimer[l.code] || C.disclaimer._default || 'AI chatbot';
   document.getElementById('disclaimer').innerHTML =
-    `${disc} · <a href="${wu}" target="_blank">${wl}</a>`;
+    `${disc} · <a href="${wu}" target="_blank">${wl}</a>${acCredit}`;
   
   renderMessages();
   document.getElementById('lang-screen').style.display = 'none';
