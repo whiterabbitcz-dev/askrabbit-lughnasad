@@ -8,7 +8,7 @@
   "bot": {
     "name": "Diviciacus",
     "tagline": "Rádce, lékař a soudce",
-    "logo_path": "/static/img/logo.png",
+    "logo_path": "/static/img/diviciacus.png",
     "favicon_emoji": "🌿",
     "bot_emoji": "🌿"
   },
