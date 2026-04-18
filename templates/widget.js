@@ -32,12 +32,22 @@
       width: 64px; height: 64px; border-radius: 50%;
       border: none; cursor: pointer; z-index: 99998;
       display: flex; align-items: center; justify-content: center;
+      overflow: visible;
       font-size: 32px; transition: transform 0.2s, box-shadow 0.2s;
       box-shadow: 0 4px 20px rgba(0,0,0,0.3);
       background: #3d0c0e;
     }
     #wr-bot-toggle:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(0,0,0,0.4); }
-    #wr-bot-toggle.open { background: #2a0809; font-size: 24px; }
+    #wr-bot-toggle .bot-avatar {
+      position: absolute; width: 125%; height: 125%;
+      top: -12.5%; left: -12.5%;
+      object-fit: contain; pointer-events: none;
+    }
+    #wr-bot-toggle .bot-close {
+      display: none; font-size: 24px; line-height: 1;
+    }
+    #wr-bot-toggle.open .bot-avatar { display: none; }
+    #wr-bot-toggle.open .bot-close { display: block; }
     #wr-bot-frame {
       position: fixed; bottom: 100px; right: 24px;
       width: 380px; height: 600px;
@@ -66,23 +76,32 @@
     const accentDark = C ? C.branding.primary_dark : '#333';
     const primary = C ? C.branding.primary : '#3d0c0e';
     const logoUrl = C && C.bot.logo_path ? BOT_URL + C.bot.logo_path : '';
+    const avatarBg = (C && C.bot.avatar_bg) || primary;
 
-    // Closed: logo image fills the button on primary color (transparent PNG
-    // lets the bordó show through like Prokop's yellow circle on BeerBot).
-    // Open: plain primary with ✕.
-    const closedBg = logoUrl
-      ? `${primary} url(${logoUrl}) center/cover no-repeat`
-      : `linear-gradient(135deg, ${accent} 0%, ${accent}dd 100%)`;
+    // Closed button: avatar_bg circle, <img> inside overflows slightly
+    // (head + staff extend beyond the circle — Prokop-style).
+    // Open button: primary color with ✕ (avatar hidden via CSS).
+    if (logoUrl) {
+      const avatar = document.createElement('img');
+      avatar.className = 'bot-avatar';
+      avatar.src = logoUrl;
+      avatar.alt = '';
+      toggle.appendChild(avatar);
+    } else {
+      toggle.textContent = emoji;
+    }
+    const closeSpan = document.createElement('span');
+    closeSpan.className = 'bot-close';
+    closeSpan.textContent = '✕';
+    toggle.appendChild(closeSpan);
 
-    toggle.style.background = closedBg;
-    toggle.textContent = logoUrl ? '' : emoji;
+    toggle.style.background = avatarBg;
     document.body.appendChild(toggle);
 
     toggle.addEventListener('click', () => {
       const open = frame.classList.toggle('open');
       toggle.classList.toggle('open', open);
-      toggle.textContent = open ? '✕' : (logoUrl ? '' : emoji);
-      toggle.style.background = open ? primary : closedBg;
+      toggle.style.background = open ? primary : avatarBg;
       toggle.style.color = open ? accent : accentDark;
 
       if (open && !frame.querySelector('iframe')) {

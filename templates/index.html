@@ -49,7 +49,7 @@ body{font-family:var(--font-body)}
 .hdr-logo{width:36px;height:36px;border-radius:8px;object-fit:contain}
 .hdr-info{flex:1}.hdr-name{font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--primary)}
 .hdr-sub{font-size:10px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase}
-.hdr-flag{font-size:22px}
+.hdr-flag{font-size:22px;cursor:pointer;user-select:none}
 
 .messages{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;
   -webkit-overflow-scrolling:touch;scroll-behavior:smooth}
@@ -162,7 +162,14 @@ document.title = C.bot.name + ' — ' + C.bot.tagline;
 // Init lang screen
 document.getElementById('logo').src = C.bot.logo_path;
 document.getElementById('bot-name').textContent = C.bot.name;
-document.getElementById('tagline').textContent = C.bot.tagline;
+
+// Helper: resolve localized value (object with lang codes) or plain string
+function resolveLocalized(v, langCode) {
+  if (typeof v === 'string') return v;
+  if (!v) return '';
+  return v[langCode] || v[C.languages[0].code] || Object.values(v)[0] || '';
+}
+document.getElementById('tagline').textContent = resolveLocalized(C.bot.tagline, C.languages[0].code);
 
 // Landing CTA
 if (C.landing_cta) {
@@ -191,7 +198,7 @@ document.getElementById('lang-footer').innerHTML =
 // Chat header
 document.getElementById('hdr-logo').src = C.bot.logo_path;
 document.getElementById('hdr-name').textContent = C.bot.name;
-document.getElementById('hdr-sub').textContent = C.bot.tagline;
+// hdr-sub is set per-language inside selectLang()
 
 // State
 let lang = null, messages = [], loading = false, sessionId = null;
@@ -212,7 +219,16 @@ const SOURCE = params.get('source') || (window.self !== window.top ? 'widget' :
 
 function selectLang(l) {
   lang = l.code;
-  document.getElementById('hdr-flag').textContent = l.flag;
+  document.getElementById('hdr-sub').textContent = resolveLocalized(C.bot.tagline, l.code);
+
+  // Flag in chat header acts as a CZ↔EN switcher: shows the *other* language,
+  // click switches to it. For SK, falls back to offering CZ.
+  const altCode = l.code === 'cs' ? 'en' : 'cs';
+  const altLang = C.languages.find(x => x.code === altCode) || C.languages[0];
+  const flagEl = document.getElementById('hdr-flag');
+  flagEl.textContent = altLang.flag;
+  flagEl.onclick = () => selectLang(altLang);
+
   messages = [{ role: 'assistant', content: C.welcome[l.code] || C.welcome.en }];
   
   const ph = C.placeholders[l.code] || C.placeholders.en || 'Ask me...';
