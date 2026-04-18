@@ -67,13 +67,16 @@
     const primary = C ? C.branding.primary : '#3d0c0e';
     const logoUrl = C && C.bot.logo_path ? BOT_URL + C.bot.logo_path : '';
 
-    // Closed: logo image on primary color. Open: plain primary with ✕.
+    // Closed: logo image fills the button on primary color (transparent PNG
+    // lets the bordó show through like Prokop's yellow circle on BeerBot).
+    // Open: plain primary with ✕.
     const closedBg = logoUrl
-      ? `${primary} url(${logoUrl}) center/70% no-repeat`
+      ? `${primary} url(${logoUrl}) center/cover no-repeat`
       : `linear-gradient(135deg, ${accent} 0%, ${accent}dd 100%)`;
 
     toggle.style.background = closedBg;
     toggle.textContent = logoUrl ? '' : emoji;
+    document.body.appendChild(toggle);
 
     toggle.addEventListener('click', () => {
       const open = frame.classList.toggle('open');
@@ -92,15 +95,15 @@
   };
   document.head.appendChild(cfgScript);
 
-  // Create elements
+  // Create elements — toggle is NOT appended to body yet, that happens
+  // inside cfgScript.onload after the logo/styling is set, to avoid
+  // a flash of a generic icon before the branded avatar loads.
   const toggle = document.createElement('button');
   toggle.id = 'wr-bot-toggle';
-  toggle.setAttribute('aria-label', 'Open chatbot');
-  toggle.textContent = '💬';
+  toggle.setAttribute('aria-label', 'Zeptej se Diviciaca');
 
   const frame = document.createElement('div');
   frame.id = 'wr-bot-frame';
 
   document.body.appendChild(frame);
-  document.body.appendChild(toggle);
 })();

@@ -310,6 +310,8 @@ async def config_js():
         "welcome": WELCOME,
         "placeholders": PLACEHOLDERS,
         "disclaimer": DISCLAIMER,
+        "landing_cta": CFG.get("landing_cta", {}),
+        "agency_credit": CFG.get("agency_credit", ""),
         "website_url": CFG.get("website_url", ""),
         "website_label": CFG.get("website_label", ""),
     }
