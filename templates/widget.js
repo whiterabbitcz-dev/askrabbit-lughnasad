@@ -8,9 +8,20 @@
  * The widget loads branding from the bot's /config.js endpoint.
  */
 (function() {
-  // Auto-detect bot URL from script src
-  const scripts = document.getElementsByTagName('script');
-  const thisScript = scripts[scripts.length - 1];
+  // Auto-detect bot URL — find widget.js script tag reliably
+  // (can't use scripts[scripts.length - 1] because defer/async changes load order)
+  const allScripts = document.getElementsByTagName('script');
+  let thisScript = null;
+  for (let i = allScripts.length - 1; i >= 0; i--) {
+    if (allScripts[i].src && /\/widget\.js(\?|$)/.test(allScripts[i].src)) {
+      thisScript = allScripts[i];
+      break;
+    }
+  }
+  if (!thisScript) {
+    console.error('[askrabbit widget] Cannot find widget.js script tag — aborting');
+    return;
+  }
   const BOT_URL = thisScript.src.replace(/\/widget\.js.*$/, '');
 
   // Inject styles
