@@ -53,16 +53,22 @@
     const emoji = C ? C.bot.bot_emoji : '💬';
     const accent = C ? C.branding.accent : '#fdc300';
     const accentDark = C ? C.branding.primary_dark : '#333';
+    const primary = C ? C.branding.primary : '#3d0c0e';
+    const logoUrl = C && C.bot.logo_path ? BOT_URL + C.bot.logo_path : '';
 
-    // Update toggle style with actual brand colors
-    toggle.style.background = `linear-gradient(135deg, ${accent} 0%, ${accent}dd 100%)`;
-    toggle.textContent = emoji;
+    // Closed: logo image on primary color. Open: plain primary with ✕.
+    const closedBg = logoUrl
+      ? `${primary} url(${logoUrl}) center/70% no-repeat`
+      : `linear-gradient(135deg, ${accent} 0%, ${accent}dd 100%)`;
+
+    toggle.style.background = closedBg;
+    toggle.textContent = logoUrl ? '' : emoji;
 
     toggle.addEventListener('click', () => {
       const open = frame.classList.toggle('open');
       toggle.classList.toggle('open', open);
-      toggle.textContent = open ? '✕' : emoji;
-      toggle.style.background = open ? accentDark : `linear-gradient(135deg, ${accent} 0%, ${accent}dd 100%)`;
+      toggle.textContent = open ? '✕' : (logoUrl ? '' : emoji);
+      toggle.style.background = open ? primary : closedBg;
       toggle.style.color = open ? accent : accentDark;
 
       if (open && !frame.querySelector('iframe')) {
