@@ -39,8 +39,11 @@
     }
     #wr-bot-toggle:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(0,0,0,0.4); }
     #wr-bot-toggle .bot-avatar {
-      position: absolute; height: 130%; width: auto;
-      top: -15%; left: 50%; transform: translateX(-50%);
+      position: absolute !important;
+      height: 140% !important; width: 122% !important;
+      max-width: none !important; max-height: none !important;
+      top: -20%; left: 50%; transform: translateX(-50%);
+      object-fit: contain;
       pointer-events: none;
     }
     #wr-bot-toggle .bot-close {
