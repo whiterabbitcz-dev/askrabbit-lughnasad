@@ -13,7 +13,7 @@
       "sk": "Radca, liečiteľ a sudca"
     },
     "logo_path": "/static/img/diviciacus.png",
-    "avatar_bg": "#4a7fa8",
+    "avatar_bg": "transparent",
     "favicon_emoji": "🌿",
     "bot_emoji": "🌿"
   },
