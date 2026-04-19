@@ -34,10 +34,11 @@
       display: flex; align-items: center; justify-content: center;
       overflow: visible;
       font-size: 32px; transition: transform 0.2s, box-shadow 0.2s;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
       background: #3d0c0e;
     }
-    #wr-bot-toggle:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(0,0,0,0.4); }
+    #wr-bot-toggle:hover { transform: scale(1.08); }
+    #wr-bot-toggle.open { box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    #wr-bot-toggle.open:hover { box-shadow: 0 6px 28px rgba(0,0,0,0.4); }
     #wr-bot-toggle .bot-avatar {
       position: absolute !important;
       height: 140% !important; width: 122% !important;
@@ -45,6 +46,7 @@
       top: -20%; left: 50%; transform: translateX(-50%);
       object-fit: contain;
       pointer-events: none;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
     }
     #wr-bot-toggle .bot-close {
       display: none; font-size: 24px; line-height: 1;
