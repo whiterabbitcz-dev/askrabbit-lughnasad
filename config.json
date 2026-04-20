@@ -8,9 +8,9 @@
   "bot": {
     "name": "Diviciacus",
     "tagline": {
-      "cs": "Rádce, lékař a soudce",
-      "en": "Counselor, healer, judge",
-      "sk": "Radca, liečiteľ a sudca"
+      "cs": "Ptej se, co potřebuješ vědět",
+      "en": "Ask me what you need to know",
+      "sk": "Pýtaj sa, čo potrebuješ vedieť"
     },
     "logo_path": "/static/img/diviciacus.png",
     "avatar_bg": "transparent",
