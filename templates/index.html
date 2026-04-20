@@ -157,11 +157,9 @@ if (B.font_url) {
   document.head.appendChild(link);
 }
 
-document.title = C.bot.name + ' — ' + C.bot.tagline;
-
-// Init lang screen
-document.getElementById('logo').src = C.bot.logo_path;
-document.getElementById('bot-name').textContent = C.bot.name;
+// Detected browser language — used for landing-screen copy
+const browserLangCode = (navigator.language || 'en').toLowerCase().split('-')[0];
+const browserLang = C.languages.find(l => l.code === browserLangCode) || C.languages[0];
 
 // Helper: resolve localized value (object with lang codes) or plain string
 function resolveLocalized(v, langCode) {
@@ -169,12 +167,17 @@ function resolveLocalized(v, langCode) {
   if (!v) return '';
   return v[langCode] || v[C.languages[0].code] || Object.values(v)[0] || '';
 }
-document.getElementById('tagline').textContent = resolveLocalized(C.bot.tagline, C.languages[0].code);
 
-// Landing CTA
+document.title = C.bot.name + ' — ' + resolveLocalized(C.bot.tagline, browserLang.code);
+
+// Init lang screen — all localized text uses the detected browser language
+document.getElementById('logo').src = C.bot.logo_path;
+document.getElementById('bot-name').textContent = C.bot.name;
+document.getElementById('tagline').textContent = resolveLocalized(C.bot.tagline, browserLang.code);
+
+// Landing CTA — single line in the detected browser language
 if (C.landing_cta) {
-  document.getElementById('landing-cta').innerHTML =
-    C.languages.map(l => C.landing_cta[l.code] || '').filter(Boolean).join('<br>');
+  document.getElementById('landing-cta').textContent = C.landing_cta[browserLang.code] || '';
 }
 
 // Agency credit (reused in both footers)
@@ -306,12 +309,9 @@ async function send() {
   inputEl.focus();
 }
 
-// Auto-detect browser language and skip the language selection screen.
-// Falls back to the first configured language (CZ) for unsupported browsers.
-// User can still change language via the ← back button in the chat header.
-const autoLangCode = (navigator.language || 'en').toLowerCase().split('-')[0];
-const autoLang = C.languages.find(l => l.code === autoLangCode) || C.languages[0];
-selectLang(autoLang);
+// Skip the language selection screen — open chat directly in browserLang.
+// User can still switch via the ← back button or the flag in the chat header.
+selectLang(browserLang);
 </script>
 </body>
 </html>
