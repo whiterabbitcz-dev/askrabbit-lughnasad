@@ -63,6 +63,7 @@ body{font-family:var(--font-body)}
   border-bottom-left-radius:6px;color:var(--text-light)}
 .msg .ico{font-size:17px;flex-shrink:0;margin-top:1px}
 .msg .txt{white-space:pre-wrap;word-break:break-word}
+.msg.bot .txt a{color:var(--primary);font-weight:600;text-decoration:underline}
 
 .typing{align-self:flex-start;background:var(--bot-bg);border:1px solid var(--bot-border);
   border-radius:20px;border-bottom-left-radius:6px;padding:11px 15px;display:flex;gap:4px;align-items:center}
@@ -253,13 +254,19 @@ function showLang() {
   messages = []; lang = null; sessionId = null;
 }
 
+// URL v odpovedi bota -> klikaci odkaz (novy tab); text bez protokolu, at je bublina citelna
+function linkify(s) {
+  return s.replace(/https?:\/\/[^\s<]*[^\s<.,!?)"']/g, u =>
+    `<a href="${u}" target="_blank" rel="noopener">${u.replace(/^https?:\/\/(www\.)?/, '')}</a>`);
+}
+
 function renderMessages() {
   const emoji = C.bot.bot_emoji;
   msgsEl.innerHTML = messages.map(m => {
     if (m.role === 'user') {
       return `<div class="msg user"><span class="txt">${esc(m.content)}</span></div>`;
     }
-    return `<div class="msg bot"><span class="ico">${emoji}</span><span class="txt">${esc(m.content)}</span></div>`;
+    return `<div class="msg bot"><span class="ico">${emoji}</span><span class="txt">${linkify(esc(m.content))}</span></div>`;
   }).join('');
   
   if (loading) {
