@@ -303,6 +303,9 @@ async def chat(req: ChatReq, request: Request):
         resp = llm.messages.create(
             model="claude-sonnet-5",
             max_tokens=1024,
+            # thinking vypnute: FAQ widget potrebuje rychle odpovedi;
+            # Sonnet 5 ma jinak adaptive thinking zapnute defaultne
+            thinking={"type": "disabled"},
             system=[{
                 "type": "text",
                 "text": build_system_prompt(req.language),
@@ -310,9 +313,13 @@ async def chat(req: ChatReq, request: Request):
             }],
             messages=req.messages,
         )
-        reply = resp.content[0].text
+        reply = next((b.text for b in resp.content if b.type == "text"), "")
+        if not reply:
+            raise ValueError(f"no text block in response (stop_reason={resp.stop_reason})")
     except Exception as e:
+        import traceback
         print(f"LLM error: {e}")
+        traceback.print_exc()
         raise HTTPException(502, "Chat unavailable")
 
     flagged = is_unknown(reply)
