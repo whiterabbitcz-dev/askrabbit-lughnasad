@@ -111,7 +111,7 @@
 
       if (open && !frame.querySelector('iframe')) {
         const iframe = document.createElement('iframe');
-        iframe.src = BOT_URL + '/?source=widget';
+        iframe.src = BOT_URL + '/?source=widget&v=' + Date.now();
         iframe.title = C ? C.bot.name : 'Chatbot';
         frame.appendChild(iframe);
       }
