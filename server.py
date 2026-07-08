@@ -371,19 +371,24 @@ async def config_js():
         "website_label": CFG.get("website_label", ""),
     }
     js = f"window.__BOTCFG__ = {json.dumps(client_cfg, ensure_ascii=False)};"
-    return HTMLResponse(content=js, media_type="application/javascript")
+    return HTMLResponse(content=js, media_type="application/javascript", headers=NO_CACHE)
 
 
 # ─── FRONTEND (served from templates/) ────────────────────────────────
 
+# no-cache: prohlizec si pri kazdem nacteni overi cerstvost (ETag -> levne 304),
+# jinak po deployi drzi stary chat a fixy "nejsou videt"
+NO_CACHE = {"Cache-Control": "no-cache"}
+
+
 @app.get("/", response_class=HTMLResponse)
 async def index():
-    return FileResponse("templates/index.html")
+    return FileResponse("templates/index.html", headers=NO_CACHE)
 
 
 @app.get("/widget.js")
 async def widget_js():
-    return FileResponse("templates/widget.js", media_type="application/javascript")
+    return FileResponse("templates/widget.js", media_type="application/javascript", headers=NO_CACHE)
 
 
 # ─── ADMIN ────────────────────────────────────────────────────────────
