@@ -23,9 +23,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
+import asyncio
+
 import anthropic
 import gspread
 from google.oauth2.service_account import Credentials
+
+import kb_sync
 
 # ─── LOAD CONFIG ──────────────────────────────────────────────────────
 
@@ -95,17 +99,22 @@ def refresh_kb():
     if time.time() - _kb["ts"] < KB_REFRESH:
         return _kb["text"]
     try:
-        ws = gc.open_by_key(SHEET_ID).worksheet("Knowledge Base")
-        rows = ws.get_all_values()
+        sh = gc.open_by_key(SHEET_ID)
         lines, cat = [], ""
-        for row in rows[1:]:
-            if len(row) < 2 or not row[1].strip():
+        # "Knowledge Base" = rucni obsah, "KB Web (auto)" = denni sync z lughnasad.cz
+        for tab in ("Knowledge Base", kb_sync.AUTO_TAB):
+            try:
+                rows = sh.worksheet(tab).get_all_values()
+            except Exception:
                 continue
-            c = row[0].strip()
-            if c and c != cat:
-                lines.append(f"\n{c.upper()}:")
-                cat = c
-            lines.append(f"- {row[1].strip()}")
+            for row in rows[1:]:
+                if len(row) < 2 or not row[1].strip():
+                    continue
+                c = row[0].strip()
+                if c and c != cat:
+                    lines.append(f"\n{c.upper()}:")
+                    cat = c
+                lines.append(f"- {row[1].strip()}")
         if lines:
             _kb["text"] = "\n".join(lines)
             _kb["ts"] = time.time()
@@ -163,6 +172,7 @@ def build_system_prompt(lang_code: str) -> str:
         lang_name=LANG_NAMES.get(lang_code, "English"),
         lang_code=lang_code,
         knowledge_base=kb,
+        current_date=datetime.now(timezone.utc).strftime("%-d. %-m. %Y"),
     )
 
 
@@ -171,7 +181,6 @@ def build_system_prompt(lang_code: str) -> str:
 UNKNOWN_MARKERS = [
     "nevím", "don't know", "not sure", "nemám informac",
     "kontaktujte", "contact", "zeptejte se", "ask at",
-    "+420 778", "visit@beermuseum", "na recepci",
     "kann ich nicht", "no tengo esa información",
     "je ne sais pas", "non so", "わかりません",
     "모르겠", "不知道", "nie wiem", "не знаю",
@@ -239,9 +248,32 @@ class ChatRes(BaseModel):
     session_id: str
 
 
+def run_kb_sync() -> int:
+    gc = get_gc()
+    if not gc or not SHEET_ID:
+        return 0
+    n = kb_sync.sync_kb(gc, SHEET_ID)
+    _kb["ts"] = 0  # vynutit refresh pri pristim dotazu
+    return n
+
+
+async def daily_kb_sync():
+    while True:
+        await asyncio.sleep(24 * 3600)
+        try:
+            await asyncio.to_thread(run_kb_sync)
+        except Exception as e:
+            print(f"⚠️  Daily KB sync failed: {e}")
+
+
 @app.on_event("startup")
 async def startup():
+    try:
+        run_kb_sync()
+    except Exception as e:
+        print(f"⚠️  Startup KB sync failed: {e}")
     refresh_kb()
+    asyncio.create_task(daily_kb_sync())
     print(f"🚀 {BOT['name']} started")
 
 
@@ -269,9 +301,13 @@ async def chat(req: ChatReq, request: Request):
 
     try:
         resp = llm.messages.create(
-            model="claude-haiku-4-5-20251001",
+            model="claude-sonnet-5",
             max_tokens=1024,
-            system=build_system_prompt(req.language),
+            system=[{
+                "type": "text",
+                "text": build_system_prompt(req.language),
+                "cache_control": {"type": "ephemeral"},
+            }],
             messages=req.messages,
         )
         reply = resp.content[0].text
@@ -289,6 +325,18 @@ async def chat(req: ChatReq, request: Request):
             pass
 
     return ChatRes(reply=reply, session_id=sid)
+
+
+@app.post("/kb/sync")
+async def force_sync(p: str = Query(...)):
+    if p != ADMIN_PASSWORD:
+        raise HTTPException(403)
+    try:
+        n = await asyncio.to_thread(run_kb_sync)
+    except Exception as e:
+        raise HTTPException(502, f"Sync failed: {e}")
+    kb = refresh_kb()
+    return {"ok": True, "synced_rows": n, "kb_entries": kb.count("\n-")}
 
 
 @app.post("/kb/refresh")
