@@ -306,6 +306,9 @@ async def chat(req: ChatReq, request: Request):
             # thinking vypnute: FAQ widget potrebuje rychle odpovedi;
             # Sonnet 5 ma jinak adaptive thinking zapnute defaultne
             thinking={"type": "disabled"},
+            # top-level marker caches the conversation history too (breakpoint
+            # moves to the last message), so long chats don't re-pay old turns
+            cache_control={"type": "ephemeral"},
             system=[{
                 "type": "text",
                 "text": build_system_prompt(req.language),
@@ -314,6 +317,9 @@ async def chat(req: ChatReq, request: Request):
             messages=req.messages,
         )
         reply = next((b.text for b in resp.content if b.type == "text"), "")
+        u = resp.usage
+        print(f"usage sid={sid} in={u.input_tokens} cache_write={u.cache_creation_input_tokens} "
+              f"cache_read={u.cache_read_input_tokens} out={u.output_tokens}")
         if not reply:
             raise ValueError(f"no text block in response (stop_reason={resp.stop_reason})")
     except Exception as e:
